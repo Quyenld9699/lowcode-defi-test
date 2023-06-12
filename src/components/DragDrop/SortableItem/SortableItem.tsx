@@ -5,6 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Box, ClickAwayListener, IconButton } from '@mui/material';
 import { VARIANT_FUNCTION } from '../constants';
 import { RemoveCircleOutline, SettingsOutlined } from '@mui/icons-material';
+import { useManageDragDropStatesContext } from '../context/manage-dragdrop-states';
 
 export default function SortableItem(props: { id: string; index: number; nameFunction: string }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.id, data: { type: VARIANT_FUNCTION, name: props.nameFunction } });
@@ -42,9 +43,7 @@ export default function SortableItem(props: { id: string; index: number; nameFun
                         // onClick={handleClick}
                     >
                         id={props.id}
-                        <IconButton onClick={handleClick} color="error" sx={{ mx: 1 }}>
-                            <RemoveCircleOutline />
-                        </IconButton>
+                        <ButtonRemoveItem id={props.id} />
                         <IconButton onClick={handleClick} color="primary">
                             <SettingsOutlined />
                         </IconButton>
@@ -59,5 +58,17 @@ export default function SortableItem(props: { id: string; index: number; nameFun
                 </Box>
             </ClickAwayListener>
         </Box>
+    );
+}
+
+function ButtonRemoveItem({ id }: { id: string }) {
+    const { deleteItemAtSortableZone } = useManageDragDropStatesContext();
+    function handleClick() {
+        deleteItemAtSortableZone(id);
+    }
+    return (
+        <IconButton onClick={handleClick} color="error" sx={{ mx: 1 }}>
+            <RemoveCircleOutline />
+        </IconButton>
     );
 }

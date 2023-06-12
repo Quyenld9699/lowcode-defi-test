@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormatNumberOptions } from 'src/global.config';
 import { isNumeric } from '.';
 import { format as fd, compareAsc } from 'date-fns';

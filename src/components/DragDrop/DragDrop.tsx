@@ -5,49 +5,50 @@ import SortableZone from './SortableZone/SortableZone';
 import DraggableNormalZone from './DraggableNormalZone/DraggableNormalZone';
 import { ROOT_FUNCTION, TItemDrag, VARIANT_FUNCTION } from './constants';
 import useManageDragDrop from './hooks/useManageDragDrop';
+import { useManageDragDropStatesContext } from './context/manage-dragdrop-states';
 
 export default function DragDrop() {
-    const [activeItem, setActiveItem] = useState<{ id: string; from: TItemDrag; name: string } | null>(null);
-    const { dragDropState, acceptMoveSourceToTarget, pendingMoveSourceToTarget, rejectMoveSourceToTarget, renewIdRootFunction, logData, deleteRecipe } = useManageDragDrop();
+    const {
+        dragingItem,
+        setDragingItem,
+        sortingRecipeIds,
+        selectTabGroupRecipe,
+        sourceIdsRecipe,
+        addItemToSortableZone,
+        recipeDataSorted,
+        activeGroupOfRecipe,
+        deleteItemAtSortableZone,
+        swapItemInSortableZone,
+        renewIdInListSource,
+        logData,
+    } = useManageDragDropStatesContext();
 
     const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { delay: 150, tolerance: 30 } }));
 
     function handleDragStart(event: DragStartEvent) {
         const { active } = event;
 
-        setActiveItem({ id: active.id.toString(), from: active.data.current?.type, name: active.data.current?.name });
+        setDragingItem({ id: active.id.toString(), typeItemDrag: active.data.current?.type, data: { name: active.data.current?.name } });
     }
 
     function handleDragOver(event: DragOverEvent) {
         const { active, over } = event;
         const idActive = active.id.toString();
         console.log(event);
-        if (active.data.current?.type == ROOT_FUNCTION) {
+        if (dragingItem?.typeItemDrag == ROOT_FUNCTION) {
             // console.log(ROOT_FUNCTION);
-            // console.log({ active, over, activatorEvent, collisions, delta });
+
             if (over) {
                 const idOver = over.id.toString();
 
-                const activeItem = idActive;
-
                 if (idOver === 'draggable-normal-zone') {
+                    if (recipeDataSorted[idActive]) {
+                        deleteItemAtSortableZone(idActive);
+                    }
                     return;
                 } else {
-                    pendingMoveSourceToTarget(activeItem);
-                }
-            }
-        } else {
-            // console.log(VARIANT_FUNCTION);
-            if (over) {
-                const idOver = over.id.toString();
-                const activeItem = idActive;
-                if (idOver === 'draggable-normal-zone') {
-                    if (dragDropState.recipeData[activeItem]?.stateDrag === 'pending') {
-                        rejectMoveSourceToTarget(activeItem);
-                    }
-                } else {
-                    if (!dragDropState.recipeData[activeItem]) {
-                        pendingMoveSourceToTarget(activeItem);
+                    if (!recipeDataSorted[idActive]) {
+                        addItemToSortableZone(idActive);
                     }
                 }
             }
@@ -56,39 +57,51 @@ export default function DragDrop() {
 
     function handleDragEnd(event: DragEndEvent) {
         const { active, over, activatorEvent } = event;
-        console.log({ active, over, activatorEvent });
-        if (active.data.current?.type == VARIANT_FUNCTION) {
+        // console.log({ active, over, activatorEvent });
+        if (dragingItem?.typeItemDrag == VARIANT_FUNCTION) {
             if (over) {
-                if (active.id !== over.id.toString()) {
-                    acceptMoveSourceToTarget(active.id.toString(), over.id.toString());
-                } else {
-                    if (dragDropState.recipeData[active.id.toString()]?.stateDrag === 'pending') {
-                        acceptMoveSourceToTarget(active.id.toString(), over.id.toString());
-                    }
+                const idOver = over.id.toString();
+                if (idOver !== 'draggable-normal-zone') {
+                    swapItemInSortableZone(active.id.toString(), over.id.toString());
                 }
             }
-        } else if (active.data.current?.type == undefined) {
-            renewIdRootFunction(active.id.toString());
+        } else {
+            if (over) {
+                const idOver = over.id.toString();
+                if (idOver !== 'draggable-normal-zone') {
+                    swapItemInSortableZone(active.id.toString(), over.id.toString());
+                }
+            }
+            renewIdInListSource(active.id.toString());
         }
 
-        setActiveItem(null);
+        setDragingItem(null);
     }
     return (
         <Container>
             <Button onClick={logData} variant="outlined">
                 Logs
             </Button>
+
             <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEnd} onDragOver={handleDragOver} onDragStart={handleDragStart}>
                 <Box sx={{ mt: 20, mb: 20, borderBottom: '2px solid', borderColor: 'primary.main' }}>
-                    <SortableZone zoneId="sortable-zone" items={dragDropState.targetIds} />
+                    <SortableZone zoneId="sortable-zone" items={sortingRecipeIds} />
                 </Box>
 
-                <DraggableNormalZone zoneId="draggable-normal-zone" items={dragDropState.sourceIds}></DraggableNormalZone>
+                <Box mb={3}>
+                    <Button onClick={() => selectTabGroupRecipe('oraichain')} variant="contained" disabled={activeGroupOfRecipe === 'oraichain'}>
+                        Oraichain
+                    </Button>
+                    <Button onClick={() => selectTabGroupRecipe('stride')} variant="contained" disabled={activeGroupOfRecipe === 'stride'}>
+                        Stride
+                    </Button>
+                </Box>
+                <DraggableNormalZone zoneId="draggable-normal-zone" items={sourceIdsRecipe}></DraggableNormalZone>
 
                 <DragOverlay>
-                    {activeItem ? (
+                    {dragingItem ? (
                         <>
-                            {activeItem.from === 'variant-function' ? (
+                            {dragingItem.typeItemDrag === VARIANT_FUNCTION ? (
                                 <Box
                                     sx={{
                                         cursor: 'pointer',
@@ -103,11 +116,11 @@ export default function DragDrop() {
                                         justifyContent: 'center',
                                     }}
                                 >
-                                    {activeItem.id}
+                                    {dragingItem.id}
                                 </Box>
                             ) : (
                                 <Box sx={{ width: '250px', height: '50px', borderRadius: '10px', border: '1px dashed gray', mb: 3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    {activeItem.id}
+                                    {dragingItem.id}
                                 </Box>
                             )}
                         </>

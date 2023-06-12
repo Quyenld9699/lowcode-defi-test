@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Build exact url to resource in public folder
  * @param pathToPublicResource The path to the resource in public folder
