@@ -1,10 +1,9 @@
-import { PointerSensor, MouseSensor, TouchSensor, useSensor, useSensors, DragEndEvent, DndContext, closestCorners, DragStartEvent, DragOverlay, DragOverEvent } from '@dnd-kit/core';
+import { PointerSensor, useSensor, useSensors, DragEndEvent, DndContext, closestCorners, DragStartEvent, DragOverlay, DragOverEvent } from '@dnd-kit/core';
 import { Box, Button, Container } from '@mui/material';
-import React, { useState } from 'react';
+import React from 'react';
 import SortableZone from './SortableZone/SortableZone';
 import DraggableNormalZone from './DraggableNormalZone/DraggableNormalZone';
-import { ROOT_FUNCTION, TItemDrag, VARIANT_FUNCTION } from './constants';
-import useManageDragDrop from './hooks/useManageDragDrop';
+import { ROOT_FUNCTION, VARIANT_FUNCTION } from './constants';
 import { useManageDragDropStatesContext } from './context/manage-dragdrop-states';
 
 export default function DragDrop() {
@@ -34,7 +33,7 @@ export default function DragDrop() {
     function handleDragOver(event: DragOverEvent) {
         const { active, over } = event;
         const idActive = active.id.toString();
-        console.log(event);
+        // console.log(event);
         if (dragingItem?.typeItemDrag == ROOT_FUNCTION) {
             // console.log(ROOT_FUNCTION);
 
