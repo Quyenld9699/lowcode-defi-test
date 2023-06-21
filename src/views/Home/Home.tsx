@@ -1,6 +1,8 @@
 'use client';
 import { Box, Button, Typography } from '@mui/material';
 import React from 'react';
+import DragDrop from 'src/components/DragDrop/DragDrop';
+import ProviderWarper from 'src/components/DragDrop/context/ProviderWarper';
 import { useWalletContext } from 'src/contexts/wallet-context/wallet-context';
 import useNotifier from 'src/hooks/useNotifier';
 
@@ -19,6 +21,15 @@ export default function Home() {
                 Click
             </Button>
             <Typography textAlign={'center'}>{oraichainData.address}</Typography>
+
+            <br />
+            <ProviderWarper>
+                <DragDrop />
+            </ProviderWarper>
+            <br />
+            <br />
+            <br />
+            <br />
         </Box>
     );
 }
