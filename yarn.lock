@@ -1228,6 +1228,11 @@ dom-helpers@^5.0.1:
     "@babel/runtime" "^7.8.7"
     csstype "^3.0.2"
 
+dotenv@^16.0.3:
+  version "16.3.1"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.1.tgz#369034de7d7e5b120972693352a3bf112172cc3e"
+  integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
+
 elliptic@^6.5.4:
   version "6.5.4"
   resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.5.4.tgz#da37cebd31e79a1367e941b592ed1fbebd58abbb"
@@ -2506,6 +2511,19 @@ optionator@^0.9.1:
     prelude-ls "^1.2.1"
     type-check "^0.4.0"
     word-wrap "^1.2.3"
+
+orchai-recipe-sdk@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/orchai-recipe-sdk/-/orchai-recipe-sdk-1.0.0.tgz#84c136c145240c6c8fc2ade83ac4e1839141963b"
+  integrity sha512-jro+cjcrE5PVtVZiQEq2ICnQeLFFsXsLH5nOI85OQMS8yHB4N070F/K/NrgMXtZTPcOKX7FNub0gOG1zBCBpdw==
+  dependencies:
+    "@cosmjs/amino" "^0.30.1"
+    "@cosmjs/cosmwasm-stargate" "^0.30.1"
+    "@cosmjs/crypto" "^0.30.1"
+    "@cosmjs/math" "^0.30.1"
+    "@cosmjs/proto-signing" "^0.30.1"
+    "@cosmjs/stargate" "^0.30.1"
+    dotenv "^16.0.3"
 
 p-limit@^3.0.2:
   version "3.1.0"

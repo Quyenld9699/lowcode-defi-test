@@ -26,6 +26,10 @@ export default function Home() {
             <ProviderWarper>
                 <DragDrop />
             </ProviderWarper>
+            <br />
+            <br />
+            <br />
+            <br />
         </Box>
     );
 }

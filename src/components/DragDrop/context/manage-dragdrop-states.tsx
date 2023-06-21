@@ -2,7 +2,7 @@
 import { Dispatch, SetStateAction, createContext, useContext, useState } from 'react';
 import { BaseContextProps } from 'src/global.config';
 import { IDataListRecipeSorted, IDragingItemData } from './types';
-import { TGroupOfRecipe, recipeBaseData } from '../constants';
+import { TGroupOfRecipe, TRecipeIdentity, groupRecipeBaseData, recipeBaseData } from '../constants';
 import { v4 as uuid } from 'uuid';
 import { arrayMove } from '@dnd-kit/sortable';
 
@@ -28,9 +28,9 @@ export default function ManageDragDropStatesProvider(props: BaseContextProps) {
     const [sortingRecipeIds, setSortingRecipeIds] = useState<string[]>([]);
 
     const [dragingItem, setDragingItem] = useState<IDragingItemData | null>(null);
-    const [activeGroupOfRecipe, setActiveGroupOfRecipe] = useState<TGroupOfRecipe>('oraichain');
+    const [activeGroupOfRecipe, setActiveGroupOfRecipe] = useState<TGroupOfRecipe>('oraidex');
 
-    const [sourceIdsRecipe, setSourceIdsRecipe] = useState<string[]>(recipeBaseData[activeGroupOfRecipe].map(() => uuid()));
+    const [sourceIdsRecipe, setSourceIdsRecipe] = useState<string[]>(groupRecipeBaseData[activeGroupOfRecipe].map(() => uuid()));
 
     function logData() {
         console.log({ recipeDataSorted, sortingRecipeIds, dragingItem, activeGroupOfRecipe, sourceIdsRecipe });
@@ -38,13 +38,15 @@ export default function ManageDragDropStatesProvider(props: BaseContextProps) {
 
     // TODO: function for sortable-zone
     function addItemToSortableZone(_id: string) {
-        setSortingRecipeIds((prev) => [...prev, _id]);
-        setRecipeDataSorted((prev) => {
-            return {
-                ...prev,
-                [_id]: { id: _id, type: 'F1', data: {} },
-            };
-        });
+        if (dragingItem) {
+            setSortingRecipeIds((prev) => [...prev, _id]);
+            setRecipeDataSorted((prev) => {
+                return {
+                    ...prev,
+                    [_id]: { id: _id, idBaseRecipe: dragingItem.idBaseRecipe, data: { ...recipeBaseData[dragingItem.idBaseRecipe] } },
+                };
+            });
+        }
     }
 
     function deleteItemAtSortableZone(_id: string) {
@@ -69,7 +71,7 @@ export default function ManageDragDropStatesProvider(props: BaseContextProps) {
     // TODO: function for dragable normal zone
     function selectTabGroupRecipe(group: TGroupOfRecipe) {
         setActiveGroupOfRecipe(group);
-        setSourceIdsRecipe(recipeBaseData[group].map(() => uuid()));
+        setSourceIdsRecipe(groupRecipeBaseData[group].map(() => uuid()));
     }
 
     function renewIdInListSource(_id: string) {

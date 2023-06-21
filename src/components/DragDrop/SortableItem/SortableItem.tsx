@@ -3,12 +3,17 @@ import React, { ReactNode } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Box, ClickAwayListener, IconButton } from '@mui/material';
-import { VARIANT_FUNCTION } from '../constants';
+import { TGroupOfRecipe, VARIANT_FUNCTION, recipeBaseData } from '../constants';
 import { RemoveCircleOutline, SettingsOutlined } from '@mui/icons-material';
 import { useManageDragDropStatesContext } from '../context/manage-dragdrop-states';
+import { IRecipeSortedItem } from '../context/types';
 
-export default function SortableItem(props: { id: string; index: number; nameFunction: string }) {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.id, data: { type: VARIANT_FUNCTION, name: props.nameFunction } });
+export default function SortableItem(props: { id: string; recipeDataSortedItem: IRecipeSortedItem }) {
+    const { recipeDataSortedItem } = props;
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+        id: props.id,
+        data: { type: VARIANT_FUNCTION, idBaseRecipe: recipeDataSortedItem.idBaseRecipe },
+    });
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -39,10 +44,15 @@ export default function SortableItem(props: { id: string; index: number; nameFun
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
+                            px: 2,
                         }}
                         // onClick={handleClick}
                     >
-                        id={props.id}
+                        <Box sx={{ flexGrow: 1 }}>
+                            {recipeDataSortedItem.data.group}:
+                            <br />
+                            {recipeDataSortedItem.data.nameRecipe}
+                        </Box>
                         <ButtonRemoveItem id={props.id} />
                         <IconButton onClick={handleClick} color="primary">
                             <SettingsOutlined />

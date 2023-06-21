@@ -1,10 +1,8 @@
-import { TItemDrag } from '../constants';
-
-export type TypeRecipe = 'F1' | 'F2' | 'F3' | 'F4';
+import { TGroupOfRecipe, TItemDrag, TRecipeIdentity } from '../constants';
 
 export interface IRecipeSortedItem<TData = any> {
     id: string;
-    type: TypeRecipe;
+    idBaseRecipe: TRecipeIdentity;
     data: TData;
 }
 
@@ -15,5 +13,5 @@ export interface IDataListRecipeSorted {
 export interface IDragingItemData {
     id: string;
     typeItemDrag: TItemDrag;
-    data?: any;
+    idBaseRecipe: TRecipeIdentity;
 }

@@ -1,9 +1,9 @@
 import { PointerSensor, useSensor, useSensors, DragEndEvent, DndContext, closestCorners, DragStartEvent, DragOverlay, DragOverEvent } from '@dnd-kit/core';
-import { Box, Button, Container } from '@mui/material';
+import { Box, Button, ButtonGroup, Container } from '@mui/material';
 import React from 'react';
 import SortableZone from './SortableZone/SortableZone';
 import DraggableNormalZone from './DraggableNormalZone/DraggableNormalZone';
-import { ROOT_FUNCTION, VARIANT_FUNCTION } from './constants';
+import { ROOT_FUNCTION, TGroupOfRecipe, VARIANT_FUNCTION, groupRecipeBaseData, recipeBaseData } from './constants';
 import { useManageDragDropStatesContext } from './context/manage-dragdrop-states';
 
 export default function DragDrop() {
@@ -27,7 +27,11 @@ export default function DragDrop() {
     function handleDragStart(event: DragStartEvent) {
         const { active } = event;
 
-        setDragingItem({ id: active.id.toString(), typeItemDrag: active.data.current?.type, data: { name: active.data.current?.name } });
+        setDragingItem({
+            id: active.id.toString(),
+            typeItemDrag: active.data.current?.type,
+            idBaseRecipe: active.data.current?.idBaseRecipe,
+        });
     }
 
     function handleDragOver(event: DragOverEvent) {
@@ -88,14 +92,24 @@ export default function DragDrop() {
                 </Box>
 
                 <Box mb={3}>
-                    <Button onClick={() => selectTabGroupRecipe('oraichain')} variant="contained" disabled={activeGroupOfRecipe === 'oraichain'}>
-                        Oraichain
-                    </Button>
-                    <Button onClick={() => selectTabGroupRecipe('stride')} variant="contained" disabled={activeGroupOfRecipe === 'stride'}>
-                        Stride
-                    </Button>
+                    <ButtonGroup>
+                        {Object.keys(groupRecipeBaseData).map((item, index) => {
+                            if (activeGroupOfRecipe == item) {
+                                return (
+                                    <Button key={'gruop' + index} variant="contained">
+                                        {item}
+                                    </Button>
+                                );
+                            }
+                            return (
+                                <Button key={'gruop' + index} onClick={() => selectTabGroupRecipe(item as TGroupOfRecipe)} color="secondary" variant="text">
+                                    {item}
+                                </Button>
+                            );
+                        })}
+                    </ButtonGroup>
                 </Box>
-                <DraggableNormalZone zoneId="draggable-normal-zone" items={sourceIdsRecipe}></DraggableNormalZone>
+                <DraggableNormalZone zoneId="draggable-normal-zone" items={sourceIdsRecipe} activeGroupOfRecipe={activeGroupOfRecipe}></DraggableNormalZone>
 
                 <DragOverlay>
                     {dragingItem ? (
@@ -109,7 +123,7 @@ export default function DragDrop() {
                                         height: '90px',
                                         border: '2px solid gray',
                                         borderRadius: '10px',
-                                        marginBottom: '10px',
+                                        px: 2,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -118,8 +132,8 @@ export default function DragDrop() {
                                     {dragingItem.id}
                                 </Box>
                             ) : (
-                                <Box sx={{ width: '250px', height: '50px', borderRadius: '10px', border: '1px dashed gray', mb: 3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    {dragingItem.id}
+                                <Box sx={{ width: '250px', height: '50px', borderRadius: '10px', border: '1px dashed gray', px: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    {recipeBaseData[dragingItem.idBaseRecipe].nameRecipe}
                                 </Box>
                             )}
                         </>
